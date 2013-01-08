@@ -1,1 +1,1 @@
-module.exports = require("twitter-text");
+module.exports = require("./twitter-text");
