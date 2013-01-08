@@ -1,7 +1,10 @@
 {
   "name": "twitter-text",
   "version": "1.5.2",
-  "main": ["./twitter-text.js"],
-  "dependencies": {
-  }
+  "description": "",
+  "dependencies": {},
+  "development": {},
+  "scripts": [
+    "index.js"
+  ]
 }
