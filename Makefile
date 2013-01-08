@@ -1,5 +1,5 @@
 
-build: components index.js
+build: components twitter-text.js index.js
 	@component build --dev
 
 components: component.json

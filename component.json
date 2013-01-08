@@ -5,6 +5,7 @@
   "dependencies": {},
   "development": {},
   "scripts": [
+    "twitter-text.js",
     "index.js"
   ]
 }
