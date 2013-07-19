@@ -174,6 +174,10 @@ test("twttr.txt.autolink", function() {
   ok(autoLinkResult.match(/<a[^>]+>pre_<s>#<\/s><b>hash<\/b>_post<\/a>/), "linkTextBlock should modify a hashtag link text");
   ok(autoLinkResult.match(/<a[^>]+>pre_<s>@<\/s><b>mention<\/b>_post<\/a>/), "linkTextBlock should modify a username link text");
 
+  // extractUrlsWithoutProtocol (the default mode of extractEntitiesWithIndices)
+  same(twttr.txt.autoLinkEntities("twitter.com", twttr.txt.extractEntitiesWithIndices("twitter.com")),
+      "<a href=\"http://twitter.com\" rel=\"nofollow\">twitter.com</a>", "AutoLink with extractUrlsWithoutProtocol");
+
   // url entities
   autoLinkResult = twttr.txt.autoLink("http://t.co/0JG5Mcq", {
     invisibleTagAttrs: "style='font-size:0'",
@@ -240,6 +244,12 @@ test("twttr.txt.autolink", function() {
   same(twttr.txt.autoLink("\uD801\uDC00 #hashtag \uD801\uDC00 @mention \uD801\uDC00 http://twitter.com"),
       "\uD801\uDC00 <a href=\"https://twitter.com/#!/search?q=%23hashtag\" title=\"#hashtag\" class=\"tweet-url hashtag\" rel=\"nofollow\">#hashtag</a> \uD801\uDC00 @<a class=\"tweet-url username\" href=\"https://twitter.com/mention\" data-screen-name=\"mention\" rel=\"nofollow\">mention</a> \uD801\uDC00 <a href=\"http://twitter.com\" rel=\"nofollow\">http://twitter.com</a>",
       "Autolink hashtag/mentionURL w/ Supplementary character");
+
+  // handle the @ character in the URL
+  var testUrl = "http://twitter.com?var=@val";
+  same(twttr.txt.autoLink(testUrl),  "<a href=\"" + testUrl + "\" rel=\"nofollow\">" + testUrl + "</a>", "Autolink with special char params");
+  // handle the @ character in the URL and an @mention at the same time
+  same(twttr.txt.autoLink(testUrl + " @mention"),  "<a href=\"" + testUrl + "\" rel=\"nofollow\">" + testUrl + "</a> @<a class=\"tweet-url username\" href=\"https://twitter.com/mention\" data-screen-name=\"mention\" rel=\"nofollow\">mention</a>", "Autolink with special char params and mentions");
 });
 
 test("twttr.txt.linkTextWithEntity", function() {
@@ -287,4 +297,11 @@ test("twttr.txt.extractMentionsOrListsWithIndices", function() {
     c = invalid_chars[i];
     equal(twttr.txt.extractMentionsOrListsWithIndices("f" + c + "@kn").length, 0, "Should not extract mention if preceded by " + c);
   }
+});
+
+test("twttr.txt.extractUrls", function() {
+  var message_with_hyphenated_url = "Message with hyphenated-url.com";
+  var message_with_www_hyphenated_url = "Message with www.123-hyphenated-url.com";
+  equal(twttr.txt.extractUrls(message_with_hyphenated_url)[0], "hyphenated-url.com", "Should extract full url with hyphen.");
+  equal(twttr.txt.extractUrls(message_with_www_hyphenated_url)[0], "www.123-hyphenated-url.com", "Should extract full url with hyphen.");
 });
